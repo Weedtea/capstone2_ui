@@ -11,7 +11,7 @@ using TMPro;
 /// 메뉴에서 멀티플레이(방 생성/참여) UI와 Photon Fusion 2 연동을 담당한다.
 /// 닉네임 입력, 방 생성(랜덤 코드), 방 참여(코드 입력). 성공 시 LobbyScene으로 이동.
 /// </summary>
-public class MultiplayLobbyManager : MonoBehaviour
+public class MultiplayLobbyManager : MonoBehaviour, ILobbyManager
 {
 	private const int ROOM_CODE_LENGTH = 6;
 	private const string ROOM_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

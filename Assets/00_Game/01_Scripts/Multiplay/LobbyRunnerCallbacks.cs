@@ -18,7 +18,8 @@ using UnityEngine.SceneManagement;
 public class LobbyRunnerCallbacks : MonoBehaviour, INetworkRunnerCallbacks
 {
 	private const string LOBBY_SCENE_NAME = "LobbyScene";
-	private const string MENU_SCENE_NAME = "MenuScene";
+	private const string MENU_SCENE_NAME = "MenuScene";	private const string TITLE_SCENE_NAME = "Title";
+
 	private const float VOID_GAME_RETURN_DELAY = 3f;
 
 	public static readonly ReliableKey SCENE_CHANGE_KEY = ReliableKey.FromInts(2, 0, 0, 0);
@@ -26,14 +27,14 @@ public class LobbyRunnerCallbacks : MonoBehaviour, INetworkRunnerCallbacks
 	public static readonly ReliableKey VOID_GAME_KEY = ReliableKey.FromInts(4, 0, 0, 0);
 	public static readonly ReliableKey PLAYER_LEFT_KEY = ReliableKey.FromInts(5, 0, 0, 0);
 
-	private MultiplayLobbyManager _manager;
+	private ILobbyManager _manager;
 	private Coroutine _returnToLobbyCoroutine;
 
 	/// <summary>
 	/// 로비 매니저를 설정한다. 방 생성/참여 시 러너에 붙은 뒤 호출.
 	/// </summary>
 	/// <param name="manager">콜백을 받을 매니저</param>
-	public void SetManager(MultiplayLobbyManager manager)
+	public void SetManager(ILobbyManager manager)
 	{
 		_manager = manager;
 	}
@@ -150,7 +151,10 @@ public class LobbyRunnerCallbacks : MonoBehaviour, INetworkRunnerCallbacks
 	private bool IsInGameScene()
 	{
 		string currentScene = SceneManager.GetActiveScene().name;
-		return currentScene != LOBBY_SCENE_NAME && currentScene != MENU_SCENE_NAME;
+		if (currentScene == LOBBY_SCENE_NAME) return false;
+		if (currentScene == MENU_SCENE_NAME) return false;
+		if (currentScene == TITLE_SCENE_NAME) return false;
+		return true;
 	}
 
 	/// <summary>
