@@ -26,6 +26,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
     private GameObject tutorialPopup;
     private GameObject exitConfirmPopup;
     private GameObject settingPopup;
+    private GameObject leaveConfirmPopup;
+    private GameObject lockerPopup;
 
     [Header("Input Fields")]
     [SerializeField] private TMP_InputField createNicknameInput;
@@ -55,6 +57,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         tutorialPopup = dimPanelTrans.Find("TutorialPopup")?.gameObject;
         exitConfirmPopup = dimPanelTrans.Find("ExitConfirmPopup")?.gameObject;
         settingPopup = dimPanelTrans.Find("SettingPopup")?.gameObject;
+        leaveConfirmPopup = dimPanelTrans.Find("LeaveConfirmPopup")?.gameObject;
+        lockerPopup = dimPanelTrans.Find("LockerPopup")?.gameObject;
 
         // Hook up side menu buttons
         var leftMenu = transform.Find("SideMenuContainer");
@@ -68,6 +72,9 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
 
             var tutorialBtn = leftMenu.Find("tutorial_Button")?.GetComponent<Button>();
             if (tutorialBtn != null) tutorialBtn.onClick.AddListener(ShowTutorialPopup);
+
+            var lockerBtn = leftMenu.Find("locker_Button")?.GetComponent<Button>();
+            if (lockerBtn != null) lockerBtn.onClick.AddListener(ShowLockerPopup);
 
             var exitBtn = leftMenu.Find("exit game_Button")?.GetComponent<Button>();
             if (exitBtn != null) exitBtn.onClick.AddListener(ShowExitConfirmPopup);
@@ -106,10 +113,30 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
             exitConfirmPopup.transform.Find("Cancel_Button")?.GetComponent<Button>()?.onClick.AddListener(ClosePopups);
         }
 
+        // Hook up Leave Confirm popup buttons
+        if (leaveConfirmPopup != null)
+        {
+            leaveConfirmPopup.transform.Find("Confirm_Button_Leave")?.GetComponent<Button>()?.onClick.AddListener(OnConfirmLeaveClicked);
+            leaveConfirmPopup.transform.Find("Cancel_Button_Leave")?.GetComponent<Button>()?.onClick.AddListener(ShowSettingPopup);
+        }
+
         // Hook up Setting popup buttons
         if (settingPopup != null)
         {
             settingPopup.transform.Find("Close_Button")?.GetComponent<Button>()?.onClick.AddListener(ClosePopups);
+            
+            var systemButtons = settingPopup.transform.Find("SystemButtons_Container");
+            if (systemButtons != null)
+            {
+                systemButtons.Find("LeaveRoom_Button")?.GetComponent<Button>()?.onClick.AddListener(OnLeaveRoomClicked);
+                systemButtons.Find("ExitGame_Button")?.GetComponent<Button>()?.onClick.AddListener(ShowExitConfirmPopup);
+            }
+        }
+
+        // Hook up Locker popup buttons
+        if (lockerPopup != null)
+        {
+            lockerPopup.transform.Find("CloseButton")?.GetComponent<Button>()?.onClick.AddListener(ClosePopups);
         }
 
         // Hook up Networking buttons (if assigned via inspector)
@@ -140,6 +167,28 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
             _ = _runner.Shutdown();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // If settings is open, close it
+            if (settingPopup != null && settingPopup.activeSelf)
+            {
+                ClosePopups();
+            }
+            // If another popup is open, close all (acting as 'Back')
+            else if (dimPanel != null && dimPanel.activeSelf)
+            {
+                ClosePopups();
+            }
+            // If no popup is open, show settings
+            else
+            {
+                ShowSettingPopup();
+            }
+        }
+    }
+
     #region UI Logic
 
     public void ShowGameStartPopup()
@@ -151,6 +200,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     public void ShowCreateRoomPopup()
@@ -162,6 +213,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     public void ShowJoinRoomPopup()
@@ -173,6 +226,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     public void ShowTutorialPopup()
@@ -184,6 +239,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(true);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     public void ShowExitConfirmPopup()
@@ -195,6 +252,8 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(true);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     public void ShowSettingPopup()
@@ -206,6 +265,37 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(true);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
+    }
+
+    public void ShowLeaveConfirmPopup()
+    {
+        dimPanel.SetActive(true);
+        if (gameStartPopup) gameStartPopup.SetActive(false);
+        if (createRoomPopup) createRoomPopup.SetActive(false);
+        if (joinRoomPopup) joinRoomPopup.SetActive(false);
+        if (tutorialPopup) tutorialPopup.SetActive(false);
+        if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
+        if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(true);
+        if (lockerPopup) lockerPopup.SetActive(false);
+    }
+
+    public void ShowLockerPopup()
+    {
+        dimPanel.SetActive(true);
+        if (gameStartPopup) gameStartPopup.SetActive(false);
+        if (createRoomPopup) createRoomPopup.SetActive(false);
+        if (joinRoomPopup) joinRoomPopup.SetActive(false);
+        if (tutorialPopup) tutorialPopup.SetActive(false);
+        if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
+        if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(true);
+        
+        var lockerManager = lockerPopup?.GetComponent<LockerManager>();
+        if (lockerManager != null) lockerManager.OpenLocker();
     }
 
     public void ClosePopups()
@@ -217,12 +307,15 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
         if (tutorialPopup) tutorialPopup.SetActive(false);
         if (exitConfirmPopup) exitConfirmPopup.SetActive(false);
         if (settingPopup) settingPopup.SetActive(false);
+        if (leaveConfirmPopup) leaveConfirmPopup.SetActive(false);
+        if (lockerPopup) lockerPopup.SetActive(false);
     }
 
     private void OnDimPanelClicked()
     {
         // Settings popup should only be closed via its X button
         if (settingPopup != null && settingPopup.activeSelf) return;
+        if (lockerPopup != null && lockerPopup.activeSelf) return;
         
         ClosePopups();
     }
@@ -234,6 +327,20 @@ public class PartyTitleController : MonoBehaviour, ILobbyManager
 #else
         Application.Quit();
 #endif
+    }
+
+    public void OnLeaveRoomClicked()
+    {
+        ShowLeaveConfirmPopup();
+    }
+
+    public void OnConfirmLeaveClicked()
+    {
+        if (_runner != null && _runner.IsRunning)
+        {
+            _runner.Shutdown();
+        }
+        ShowGameStartPopup();
     }
 
     #endregion
