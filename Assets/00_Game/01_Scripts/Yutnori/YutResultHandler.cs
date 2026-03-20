@@ -107,5 +107,12 @@ public class YutResultHandler : MonoBehaviour
             Debug.Log($"[YutResultHandler] 이동 가능 상태로 전환! 플레이어{playerIdx}의 isThrowed=true 설정");
             manager.SetTeamIsThrowed(true);
         }
+
+        // HUD Result display
+        if (HUDManager.Instance != null)
+        {
+            string resultName = YutResultCalculator.GetResultName(result);
+            HUDManager.Instance.ShowResult(resultName);
+        }
     }
 }

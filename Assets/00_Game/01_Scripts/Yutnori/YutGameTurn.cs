@@ -145,6 +145,11 @@ public class YutGameTurn : MonoBehaviour
         }
 
         Debug.Log($"[YutGameTurn] 턴 {_turnCount}: 플레이어{currentIdx + 1} 차례");
+        
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateTurn($"Player {currentIdx + 1}");
+        }
     }
 
     /// <summary>

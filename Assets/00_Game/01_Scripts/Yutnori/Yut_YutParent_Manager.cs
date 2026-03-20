@@ -12,7 +12,7 @@ public class Yut_YutParent_Manager : MonoBehaviour
 
     private YutResultHandler resultHandler;
     private Coroutine throwTimerCoroutine;
-    private float throwWaitTime = 10f; // 10초 대기
+    private float throwWaitTime = 10f; // 15초 대기
 
     [Header("던지기 게이지 설정")]
     public UnityEngine.UI.Slider powerGaugeSlider; // 에디터에서 할당
@@ -188,6 +188,12 @@ public class Yut_YutParent_Manager : MonoBehaviour
         
         // 다시 던질 수 있도록 10초 타이머 재시작
         StartThrowTimer();
+    }
+
+    public void OnThrowButtonClicked()
+    {
+        if (yutGameTurn.isThrowedThisTurn || isCharging) return;
+        ExecuteThrow(1.5f); // Use a standard power multiplier for button clicks
     }
 
     private void ExecuteThrow(float multiplier)
